@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>간단한 MBTI 테스트</title>
+    <style>
+        @font-face {
+            font-family: 'Pretendard-Regular';
+            src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'Pretendard-Regular', Arial, sans-serif; /* 'Pretendard-Regular'을 기본 폰트로 사용 */
+            text-align: center;
+            background: linear-gradient(90deg, #85937d, #f3db79);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #start, #questions, #result {
+            width: 80%;
+            max-width: 600px;
+            background-color: #FFFFFF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
+
+        h1, h2, p {
+            color: #333333;
+            font-family: 'Pretendard-Regular', Arial, sans-serif; /* 'Pretendard-Regular'을 기본 폰트로 사용 */
+        }
+
+        button {
+            background-color: #76866d;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #76866d;
+        }
+
+        #result {
+            display: none;
+        }
+
+        #imageContainer {
+            margin-top: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="start">
+        <h1>간단한 MBTI 테스트</h1>
+        <button onclick="startTest()">테스트 시작</button>
+    </div>
+
+    <div id="questions">
+        <h2 id="question"></h2>
+        <button onclick="answer('A')">A</button>
+        <button onclick="answer('B')">B</button>
+    </div>
+
+    <div id="result">
+        <h2>당신의 MBTI 결과:</h2>
+        <p id="resultText"></p>
+        <div id="imageContainer"></div>
+    </div>
+
+    <script>
+        let currentQuestion = 0;
+        let answers = [];
+
+        const questions = [
+            "나는 주로 외향적인 성향을 가지고 있나요 내향적인 성향을 가지고 있나요? (E/I)",
+            "새로운 아이디어에 열려있고 변화를 즐기나요 아니면 전통과 안정을 중요시하나요? (N/S)",
+            "의사 결정 시, 객관적이고 논리적인 기준에 따라 결정을 내리나요 아니면 감정적인 기준에 따라 결정을 내리나요? (T/F)",
+            "계획을 세우는 것을 좋아하고 체계적으로 행동하나요 아니면 융통성 있게 일을 처리하고 즉흥적으로 행동하나요? (J/P)",
+            "스트레스 상황에서 나는 어떻게 대처하나요? (A: 신체적인 활동, B: 혼자 조용한 시간 보내기)",
+            "일을 처리할 때 세부적으로 계획을 세우는 편인가요 아니면 큰 그림을 보고 일을 처리하는 편인가요? (D/I)",
+            "다른 사람들과 소통하는 것을 즐기나요 아니면 혼자 있는 것을 선호하나요? (S/O)",
+            "언쟁 또는 갈등 상황에서 어떤 스타일을 보이나요? (A: 감정적으로 표현, B: 차분하고 논리적으로 대처)"
+        ];
+
+        function startTest() {
+            document.getElementById("start").style.display = "none";
+            document.getElementById("questions").style.display = "block";
+            showNextQuestion();
+        }
+
+        function showNextQuestion() {
+            if (currentQuestion < questions.length) {
+                document.getElementById("question").innerText = questions[currentQuestion];
+            } else {
+                showResult();
+            }
+        }
+
+        function answer(choice) {
+            answers.push(choice);
+            currentQuestion++;
+            showNextQuestion();
+        }
+
+        function showResult() {
+            document.getElementById("questions").style.display = "none";
+            document.getElementById("result").style.display = "block";
+
+            const mbtiResult = calculateResult();
+            const resultText = getResultDescription(mbtiResult);
+            document.getElementById("resultText").innerText = `당신의 MBTI 결과는 ${mbtiResult}입니다.\n${resultText}`;
+
+            // 이미지를 표시
+            displayImage(mbtiResult);
+        }
+
+        function calculateResult() {
+            let result = "";
+            result += answers[0] === "A" ? "E" : "I";
+            result += answers[1] === "A" ? "N" : "S";
+            result += answers[2] === "A" ? "T" : "F";
+            result += answers[3] === "A" ? "J" : "P";
+            return result;
+        }
+
+        function getResultDescription(mbtiResult) {
+            const descriptions = {
+                "ENTJ": "열성적인 지도자, 계획에 따라 움직이는 것을 좋아합니다.",
+                "ENFP": "열정적이고 창의적인 자유로운 영혼입니다.",
+                "ISTJ": "신뢰성 있고 철저한 계획을 세우는 조직가입니다.",
+                "ISFP": "예술적이고 감성적인 성향, 자유롭고 유연합니다.",
+                "ESTJ": "사회적이고 완벽주의자, 목표 달성을 중요시합니다.",
+                "ESFP": "사회적이고 에너지 넘치는 연예인, 즉흥적입니다.",
+                // 다른 MBTI 유형에 대한 결과 추가
+            };
+            return descriptions[mbtiResult] || "결과 설명이 없습니다.";
+        }
+
+        function displayImage(mbtiResult) {
+            const imageContainer = document.getElementById("imageContainer");
+            let imageUrl = "";
+
+            switch (mbtiResult) {
+                case "ENTJ":
+                    imageUrl = "https://drive.google.com/uc?id=1FQspMw2hzSdmk50Yra2cMq3fZIYAC_TY";
+                    break;
+                case "ENFP":
+                    imageUrl = "https://drive.google.com/uc?id=1FQspMw2hzSdmk50Yra2cMq3fZIYAC_TY";
+                    break;
+                case "ISTJ":
+                    imageUrl = "https://drive.google.com/uc?id=1FQspMw2hzSdmk50Yra2cMq3fZIYAC_TY";
+                    break;
+                case "ISFP":
+                    imageUrl = "https://drive.google.com/uc?id=1FQspMw2hzSdmk50Yra2cMq3fZIYAC_TY";
+                    break;
+                case "ESTJ":
+                    imageUrl = "https://drive.google.com/uc?id=1FQspMw2hzSdmk50Yra2cMq3fZIYAC_TY";
+                    break;
+                case "ESFP":
+                    imageUrl = "https://drive.google.com/uc?id=1FQspMw2hzSdmk50Yra2cMq3fZIYAC_TY";
+                    break;
+                // 다른 MBTI 유형에 대한 이미지 추가
+                default:
+                    // 기본 이미지
+                    imageUrl = "https://drive.google.com/uc?id=1FQspMw2hzSdmk50Yra2cMq3fZIYAC_TY";
+            }
+
+            const image = document.createElement("img");
+            image.src = imageUrl;
+            imageContainer.appendChild(image);
+        }
+    </script>
+</body>
+</html>
